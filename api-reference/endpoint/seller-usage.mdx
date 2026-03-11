@@ -1,0 +1,95 @@
+---
+title: Seller Usage
+api: POST /analytics/seller-usage
+description: Get aggregated usage data as a time series, broken down by data source.
+---
+
+<ParamField body="timeScale" type="string" required>
+  Time bucket granularity. One of:
+  - `h` - Hourly
+  - `d` - Daily
+  - `w` - Weekly
+  - `m` - Monthly
+</ParamField>
+
+<ParamField body="period" type="integer" required>
+  Number of time buckets to return. For example, `7` with `timeScale: "d"` returns the last 7 days. Maximum: 365.
+</ParamField>
+
+<ParamField body="includeCount" type="boolean" default="false">
+  When `true`, includes retrieval count fields alongside earnings (e.g., `All_count`, `source/academic_count`).
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-usage \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: vypub_your_key_here" \
+  -d '{"timeScale": "d", "period": 7}'
+```
+
+```python Python
+response = requests.post(
+    "https://api.publisher.valyu.ai/v1/analytics/seller-usage",
+    headers={"x-api-key": "vypub_your_key_here", "Content-Type": "application/json"},
+    json={"timeScale": "d", "period": 7},
+)
+print(response.json())
+```
+
+```javascript JavaScript
+const response = await fetch("https://api.publisher.valyu.ai/v1/analytics/seller-usage", {
+  method: "POST",
+  headers: { "x-api-key": "vypub_your_key_here", "Content-Type": "application/json" },
+  body: JSON.stringify({ timeScale: "d", period: 7 }),
+});
+const data = await response.json();
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200
+[
+  {
+    "day": "2026-03-05T00:00:00",
+    "All": 0.0523,
+    "source/academic": 0.0312,
+    "source/web": 0.0211
+  },
+  {
+    "day": "2026-03-06T00:00:00",
+    "All": 0.0891,
+    "source/academic": 0.0654,
+    "source/web": 0.0237
+  }
+]
+```
+
+```json 400
+{
+  "error": "Invalid timeScale: must be 'h', 'd', 'w', or 'm'"
+}
+```
+
+```json 401
+{
+  "error": "Unauthorized"
+}
+```
+</ResponseExample>
+
+## Response fields
+
+The response is an array of time buckets. Each bucket contains:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `hour` / `day` / `week` / `month` | string | Timestamp (key matches your `timeScale`) |
+| `All` | number | Total earnings across all sources (USD) |
+| `source/xxx` | number | Earnings for a specific source |
+| `All_count` | number | Total retrieval count (only when `includeCount: true`) |
+| `source/xxx_count` | number | Per-source retrieval count (only when `includeCount: true`) |
+
+<Note>
+  Source keys are dynamic and depend on which sources serve your content. Common values include `source/academic`, `source/web`, `source/financial`.
+</Note>

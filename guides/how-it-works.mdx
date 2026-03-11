@@ -1,0 +1,67 @@
+---
+title: How It Works
+description: Understand the data flow from buyer query to publisher analytics.
+---
+
+## The publisher analytics pipeline
+
+When AI agents search via Valyu and your content is returned, the usage is tracked and attributed to your organization. Here's the full flow:
+
+```
+1. Buyer's AI agent calls Valyu Search/Answer/DeepResearch API
+                            |
+2. Valyu search index returns relevant results
+   (including your published content)
+                            |
+3. Usage event logged in DynamoDB
+   - Your org ID
+   - Earnings amount
+   - Source breakdown
+   - Document metadata
+   - Buyer's API key prefix
+   - Product type (search/answer/contents/deepresearch)
+                            |
+4. Publisher Analytics API reads from DynamoDB
+   - Aggregated time series (seller-usage)
+   - Period comparisons (seller-earnings)
+   - Individual events (latest-usage)
+   - Bulk export (export-analytics)
+                            |
+5. Your dashboard + API keys access this data
+```
+
+## Key concepts
+
+### Earnings attribution
+
+When a buyer's query returns your content, earnings are calculated based on your dataset pricing and the buyer's plan. Each retrieval generates a transaction that is attributed to your organization.
+
+### Source breakdown
+
+Your content may be indexed across multiple source categories (e.g., `source/academic`, `source/web`). Analytics are broken down by source so you can see which categories drive the most usage.
+
+### Products
+
+The Valyu platform has several products that can trigger content retrievals:
+
+| Product | Description |
+|---------|-------------|
+| `search` | Direct search queries returning ranked results |
+| `answer` | AI-generated answers that cite your content |
+| `contents` | Content extraction referencing your data |
+| `deepresearch` | Multi-step research reports using your content |
+
+### Time bucketing
+
+Usage data is aggregated into time buckets for efficient querying. You can request hourly, daily, weekly, or monthly granularity depending on your needs.
+
+## Architecture
+
+The Publisher Analytics API runs as a separate AWS service:
+
+- **API Gateway** with custom Lambda authorizer (validates `vypub_` keys)
+- **5 Rust Lambda functions** (arm64) for high-performance data access
+- **DynamoDB** tables for usage metrics and raw retrieval logs
+- **Publisher Supabase** for API key storage and validation
+
+The API is independent of the publisher dashboard web application. Your `vypub_` key works directly against the API Gateway - no Clerk session required.

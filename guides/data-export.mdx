@@ -1,0 +1,110 @@
+---
+title: Data Export
+description: Export your analytics data as CSV or JSON for reporting and analysis.
+---
+
+The export endpoint lets you download analytics data for any date range in CSV or JSON format. Use it for periodic reports, data warehousing, or custom analysis.
+
+## Summary export (default)
+
+Export daily aggregated metrics per source:
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/export-analytics \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $VALYU_PUB_KEY" \
+  -d '{
+    "startDate": "2026-03-01",
+    "endDate": "2026-03-31",
+    "format": "csv"
+  }' -o analytics-march.csv
+```
+
+```python Python
+response = requests.post(
+    f"{BASE_URL}/analytics/export-analytics",
+    headers={"x-api-key": API_KEY, "Content-Type": "application/json"},
+    json={
+        "startDate": "2026-03-01",
+        "endDate": "2026-03-31",
+        "format": "csv",
+    },
+)
+
+with open("analytics-march.csv", "w") as f:
+    f.write(response.text)
+```
+
+```javascript JavaScript
+const response = await fetch(`${BASE_URL}/analytics/export-analytics`, {
+  method: "POST",
+  headers: { "x-api-key": API_KEY, "Content-Type": "application/json" },
+  body: JSON.stringify({
+    startDate: "2026-03-01",
+    endDate: "2026-03-31",
+    format: "csv",
+  }),
+});
+
+const csv = await response.text();
+// Save to file or process
+```
+</CodeGroup>
+
+CSV output:
+
+```csv
+Date,Source,Earnings,Retrievals
+2026-03-01,source/academic,0.0312,15
+2026-03-01,source/web,0.0211,23
+2026-03-02,source/academic,0.0654,31
+```
+
+## Detailed export
+
+Add `detailed: true` to get individual retrieval log entries with document DOIs:
+
+```json
+{
+  "startDate": "2026-03-01",
+  "endDate": "2026-03-07",
+  "format": "json",
+  "detailed": true
+}
+```
+
+Detailed JSON output:
+
+```json
+[
+  {
+    "timestamp": "2026-03-01T14:23:01Z",
+    "transaction_id": "tx_abc123",
+    "source": "source/academic",
+    "earnings": 0.0042,
+    "document_count": 2,
+    "dois": ["10.1234/example.001", "10.1234/example.002"]
+  }
+]
+```
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `startDate` | string | Yes | Start date (YYYY-MM-DD) |
+| `endDate` | string | Yes | End date (YYYY-MM-DD) |
+| `format` | string | No | `csv` (default) or `json` |
+| `detailed` | boolean | No | Individual events vs daily aggregates |
+
+<Warning>
+  Maximum date range is **366 days**. For longer periods, make multiple requests.
+</Warning>
+
+## Use cases
+
+- **Monthly reports** - Export CSV for the previous month, import into spreadsheets
+- **Data warehouse** - Export JSON nightly and load into your analytics pipeline
+- **Audit trail** - Use detailed mode to reconcile individual transactions
+- **Custom dashboards** - Feed JSON data into your own visualization tools

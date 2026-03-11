@@ -1,0 +1,74 @@
+---
+title: API Key Management
+description: Creating, managing, and securing your publisher API keys.
+---
+
+## Overview
+
+Publisher API keys (`vypub_`) provide programmatic access to the Analytics API. Each key is tied to your organization and automatically identifies it on every request.
+
+## Dashboard management
+
+Manage your keys from [publisher.valyu.ai/user/account/api-keys](https://publisher.valyu.ai/user/account/api-keys):
+
+- **Create** - Click "Create API Key", name it, and copy the key
+- **Reveal** - Click the reveal icon to decrypt and show the full key
+- **Revoke** - Click delete to immediately invalidate the key
+
+## Limits
+
+- Maximum **5 active keys** per organization
+- No rate limit per key (API Gateway has a global throttle of 50 req/s burst 100)
+- Keys do not expire automatically
+
+## Security model
+
+### Encryption at rest
+
+Keys are encrypted using AWS KMS envelope encryption:
+
+1. A data encryption key (DEK) is generated via AWS KMS
+2. The `vypub_` key is encrypted with AES-256-GCM using the DEK
+3. The encrypted key and nonce are stored in Supabase
+4. The plaintext DEK is discarded; only the KMS-encrypted DEK is kept
+
+To reveal a key, the dashboard calls KMS to decrypt the DEK, then uses it to decrypt the key.
+
+### Authentication flow
+
+When you make an API request:
+
+1. API Gateway extracts the `x-api-key` header
+2. The Lambda authorizer computes SHA256 hash of the key
+3. Hash is looked up in the `publisher_api_keys` table
+4. If found and active, the request proceeds with your org context
+5. `last_used_at` is updated on the key record
+
+### Best practices
+
+<AccordionGroup>
+  <Accordion title="Use environment variables">
+    Never hardcode API keys in source code. Use environment variables:
+
+    ```bash
+    export VALYU_PUB_KEY="vypub_..."
+    ```
+
+    ```python
+    import os
+    API_KEY = os.environ["VALYU_PUB_KEY"]
+    ```
+  </Accordion>
+
+  <Accordion title="Create separate keys per environment">
+    Use different keys for development, staging, and production. This makes it easy to revoke a compromised key without affecting other environments.
+  </Accordion>
+
+  <Accordion title="Rotate keys periodically">
+    Create a new key, update your applications, then revoke the old one. The 5-key limit gives you room for overlap during rotation.
+  </Accordion>
+
+  <Accordion title="Monitor usage">
+    Check `last_used_at` in the dashboard to identify unused keys that should be revoked.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,92 @@
+---
+title: Latest Usage
+api: POST /analytics/latest-usage
+description: Get the most recent retrieval events with document metadata and earnings.
+---
+
+<ParamField body="n" type="integer" default="10">
+  Number of recent events to return. Maximum: 100.
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/latest-usage \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: vypub_your_key_here" \
+  -d '{"n": 20}'
+```
+
+```python Python
+response = requests.post(
+    "https://api.publisher.valyu.ai/v1/analytics/latest-usage",
+    headers={"x-api-key": "vypub_your_key_here", "Content-Type": "application/json"},
+    json={"n": 20},
+)
+for event in response.json():
+    print(f"{event['timeStamp']}: ${event['amount']:.4f} via {event['product']}")
+```
+
+```javascript JavaScript
+const response = await fetch("https://api.publisher.valyu.ai/v1/analytics/latest-usage", {
+  method: "POST",
+  headers: { "x-api-key": "vypub_your_key_here", "Content-Type": "application/json" },
+  body: JSON.stringify({ n: 20 }),
+});
+const events = await response.json();
+events.forEach((e) => console.log(`${e.timeStamp}: $${e.amount?.toFixed(4)} via ${e.product}`));
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200
+[
+  {
+    "timeStamp": "2026-03-08T14:23:01.123456Z",
+    "amount": 0.0042,
+    "number_of_sources": 2,
+    "response_time": 0.0,
+    "api_key_prefix": "vy-abc1",
+    "sources": "source/academic,source/web",
+    "documents": [
+      {
+        "title": "Advances in Neural Architecture Search",
+        "url": "https://example.com/paper.pdf",
+        "id": "doc123",
+        "category": "academic"
+      }
+    ],
+    "product": "search"
+  }
+]
+```
+
+```json 401
+{
+  "error": "Unauthorized"
+}
+```
+</ResponseExample>
+
+## Response fields
+
+Events are sorted by timestamp descending (newest first).
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `timeStamp` | string | ISO 8601 timestamp of the retrieval |
+| `amount` | number | Earnings from this retrieval (USD) |
+| `number_of_sources` | integer | Number of data sources involved |
+| `response_time` | number | Response time in seconds |
+| `api_key_prefix` | string | Prefix of the buyer's API key |
+| `sources` | string | Comma-separated list of source IDs |
+| `documents` | array | Retrieved document metadata |
+| `product` | string | Which Valyu product triggered the retrieval (`search`, `answer`, `contents`, `deepresearch`) |
+
+### Document metadata
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | string | Document title |
+| `url` | string | Document URL |
+| `id` | string | Document identifier |
+| `category` | string | Document category |

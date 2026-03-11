@@ -1,68 +1,75 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "theme": "aspen",
+  "name": "Valyu Publisher",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#10B981",
+    "light": "#34D399",
+    "dark": "#059669"
   },
   "favicon": "/favicon.svg",
+  "fonts": {
+    "heading": {
+      "family": "DM Sans",
+      "weight": 600
+    },
+    "body": {
+      "family": "Inter",
+      "weight": 400
+    }
+  },
+  "appearance": {
+    "default": "dark"
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "codeblocks": {
+      "theme": {
+        "light": "github-light",
+        "dark": "github-dark-dimmed"
+      }
+    }
+  },
+  "background": {
+    "decoration": "gradient"
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Getting Started",
+            "pages": ["index", "quickstart", "authentication"]
+          },
+          {
+            "group": "Guides",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "guides/usage-analytics",
+              "guides/earnings-tracking",
+              "guides/data-export"
             ]
           },
           {
-            "group": "Customization",
-            "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
+            "group": "Concepts",
+            "pages": ["guides/how-it-works", "guides/api-keys"]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "API Reference",
         "groups": [
           {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
+            "group": "Overview",
+            "pages": ["api-reference/overview"]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Endpoints",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api-reference/endpoint/seller-usage",
+              "api-reference/endpoint/seller-earnings",
+              "api-reference/endpoint/latest-usage",
+              "api-reference/endpoint/export-analytics"
             ]
           }
         ]
@@ -71,14 +78,19 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Publisher Dashboard",
+          "href": "https://publisher.valyu.ai",
+          "icon": "chart-line"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Valyu Docs",
+          "href": "https://docs.valyu.ai",
+          "icon": "book"
+        },
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/valyuAI",
+          "icon": "github"
         }
       ]
     }
@@ -87,36 +99,58 @@
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
   },
+  "seo": {
+    "indexing": "all",
+    "metatags": {
+      "title": "Valyu Publisher API - Analytics for Data Publishers",
+      "description": "API documentation for Valyu publishers. Access your usage analytics, earnings data, and export capabilities programmatically.",
+      "og:title": "Valyu Publisher API - Analytics for Data Publishers",
+      "og:description": "Programmatic access to your publisher analytics - usage metrics, earnings tracking, and data export via REST API.",
+      "og:type": "website",
+      "twitter:card": "summary_large_image",
+      "twitter:site": "@ValyuOfficial"
+    }
+  },
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "label": "Contact",
+        "href": "mailto:contact@valyu.ai"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Publisher Dashboard",
+      "href": "https://publisher.valyu.ai"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/ValyuOfficial",
+      "github": "https://github.com/valyuAI",
+      "linkedin": "https://linkedin.com/company/valyu-ai",
+      "discord": "https://discord.gg/umtmSsppRY"
+    }
+  },
+  "api": {
+    "openapi": "/api-reference/openapi.yaml",
+    "server": "https://api.publisher.valyu.ai/v1",
+    "auth": {
+      "method": "key",
+      "name": "x-api-key"
+    },
+    "playground": {
+      "mode": "simple"
     }
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "cursor",
+      "vscode"
+    ]
   }
 }

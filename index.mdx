@@ -1,97 +1,65 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: Valyu Publisher Analytics API
+sidebarTitle: Introduction
+description: Programmatic access to your publisher analytics - usage metrics, earnings data, and export capabilities via REST API.
 ---
 
-## Setting up
+## Your data, your insights
 
-Get your documentation site up and running in minutes.
+The Valyu Publisher Analytics API gives you programmatic access to the same analytics visible in your [publisher dashboard](https://publisher.valyu.ai). Track usage, monitor earnings, and export detailed reports for your content across the Valyu network.
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="bolt" href="/quickstart">
+    Get your first API call working in under a minute.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Authentication" icon="key" href="/authentication">
+    Learn how API keys work and how to create them.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="API Reference" icon="terminal" href="/api-reference/overview">
+    Full endpoint documentation with examples.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Data Export" icon="file-export" href="/guides/data-export">
+    Export your analytics as CSV or JSON.
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+---
 
-Everything you need to create world-class documentation.
+## How it works
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+When AI agents query the Valyu search network and your content is returned in the results, that usage is tracked and attributed to your organization. The Publisher Analytics API lets you retrieve this data programmatically.
 
-## Need inspiration?
+```
+Buyer queries Valyu Search API
+        |
+        v
+Your content returned in results
+        |
+        v
+Usage logged with your org ID (DynamoDB)
+        |
+        v
+Publisher Analytics API <-- You are here
+```
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+## Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| [`POST /analytics/seller-usage`](/api-reference/endpoint/seller-usage) | Time series usage data by source |
+| [`POST /analytics/seller-earnings`](/api-reference/endpoint/seller-earnings) | Earnings with period-over-period comparison |
+| [`POST /analytics/latest-usage`](/api-reference/endpoint/latest-usage) | Recent retrieval events with document metadata |
+| [`POST /analytics/export-analytics`](/api-reference/endpoint/export-analytics) | Bulk export as CSV or JSON |
+
+## Quick example
+
+```bash
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-usage \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: vypub_your_key_here" \
+  -d '{"timeScale": "d", "period": 7}'
+```
+
+<Note>
+  All endpoints require a `vypub_` API key. Create one from the [API Keys page](https://publisher.valyu.ai/user/account/api-keys) in your dashboard.
+</Note>

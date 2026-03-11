@@ -1,0 +1,88 @@
+---
+title: Authentication
+description: How API key authentication works for the Publisher Analytics API.
+---
+
+## API keys
+
+All Publisher Analytics API endpoints require authentication via a `vypub_` API key passed in the `x-api-key` header.
+
+```bash
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-usage \
+  -H "x-api-key: vypub_your_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{"timeScale": "d", "period": 7}'
+```
+
+## How it works
+
+1. You create an API key from your [publisher dashboard](https://publisher.valyu.ai/user/account/api-keys)
+2. The key is encrypted with AES-256-GCM using AWS KMS envelope encryption
+3. A SHA256 hash of the key is stored for fast authentication
+4. When you make a request, the API Gateway authorizer hashes the incoming key and looks it up
+5. Your organization ID is automatically derived from the key - you never need to pass it
+
+<Note>
+  You do not need to specify an `orgId` in any request. The API key uniquely identifies your organization.
+</Note>
+
+## Creating API keys
+
+<Steps>
+  <Step title="Navigate to API Keys">
+    Go to [publisher.valyu.ai/user/account/api-keys](https://publisher.valyu.ai/user/account/api-keys) in your dashboard.
+  </Step>
+  <Step title="Create a new key">
+    Click **Create API Key** and give it a descriptive name (e.g., "Production Analytics", "CI/CD Export").
+  </Step>
+  <Step title="Copy and store securely">
+    The full key is shown once on creation. Copy it immediately and store it in a secure location (environment variable, secrets manager, etc.).
+
+    You can reveal the key again later from the dashboard, but we recommend storing it securely on first creation.
+  </Step>
+</Steps>
+
+## Key management
+
+| Action | How |
+|--------|-----|
+| **List keys** | Dashboard > API Keys page |
+| **Create key** | Dashboard > API Keys > Create |
+| **Reveal key** | Dashboard > API Keys > Click reveal icon |
+| **Revoke key** | Dashboard > API Keys > Click delete icon |
+
+<Warning>
+  Each organization can have a maximum of **5 active API keys**. Revoke unused keys to free up slots.
+</Warning>
+
+## Key format
+
+All publisher API keys follow this format:
+
+```
+vypub_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+- Prefix: `vypub_` (always)
+- Body: 32 random alphanumeric characters
+- Total length: 38 characters
+
+## Security
+
+- Keys are encrypted at rest using AWS KMS envelope encryption (AES-256-GCM)
+- Only the SHA256 hash is used for authentication lookups (the authorizer never stores plaintext keys)
+- The `last_used_at` timestamp is updated on each successful authentication
+- Revoked keys are immediately invalidated
+
+## Error responses
+
+| Status | Meaning |
+|--------|---------|
+| `401 Unauthorized` | Missing `x-api-key` header or invalid/revoked key |
+| `403 Forbidden` | Key is valid but lacks required scopes (reserved for future use) |
+
+```json
+{
+  "error": "Unauthorized"
+}
+```

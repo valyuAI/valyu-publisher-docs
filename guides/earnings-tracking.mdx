@@ -1,0 +1,76 @@
+---
+title: Earnings Tracking
+description: Monitor your revenue with period-over-period comparisons.
+---
+
+The earnings endpoint gives you a quick snapshot of revenue performance, comparing your current period against the previous one. This is the same data that powers the KPI cards on your dashboard.
+
+## Basic usage
+
+Compare this week's earnings to last week:
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-earnings \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $VALYU_PUB_KEY" \
+  -d '{"timePeriod": "w"}'
+```
+
+```python Python
+response = requests.post(
+    f"{BASE_URL}/analytics/seller-earnings",
+    headers={"x-api-key": API_KEY, "Content-Type": "application/json"},
+    json={"timePeriod": "w"},
+)
+
+data = response.json()
+print(f"Current:  ${data['current_earnings']:.2f}")
+print(f"Previous: ${data['previous_earnings']:.2f}")
+print(f"Change:   {data['percentage_change']:+.1f}%")
+```
+
+```javascript JavaScript
+const response = await fetch(`${BASE_URL}/analytics/seller-earnings`, {
+  method: "POST",
+  headers: { "x-api-key": API_KEY, "Content-Type": "application/json" },
+  body: JSON.stringify({ timePeriod: "w" }),
+});
+
+const data = await response.json();
+console.log(`Current:  $${data.current_earnings.toFixed(2)}`);
+console.log(`Previous: $${data.previous_earnings.toFixed(2)}`);
+console.log(`Change:   ${data.percentage_change > 0 ? "+" : ""}${data.percentage_change.toFixed(1)}%`);
+```
+</CodeGroup>
+
+## Time periods
+
+| Value | Comparison |
+|-------|------------|
+| `d` | Today vs yesterday |
+| `w` | Last 7 days vs previous 7 days |
+| `m` | Last 30 days vs previous 30 days |
+
+## Response format
+
+```json
+{
+  "current_earnings": 12.4523,
+  "previous_earnings": 9.8712,
+  "percentage_change": 26.14
+}
+```
+
+- **`current_earnings`** - total earnings in USD for the current period
+- **`previous_earnings`** - total earnings in USD for the comparison period
+- **`percentage_change`** - percentage change from previous to current (positive = growth)
+
+## Building dashboards
+
+Combine the earnings endpoint with the [usage endpoint](/guides/usage-analytics) to build complete analytics dashboards:
+
+1. **KPI cards** - Use `seller-earnings` with different `timePeriod` values for daily/weekly/monthly snapshots
+2. **Charts** - Use `seller-usage` with `timeScale: "d"` for line charts
+3. **Activity feed** - Use `latest-usage` for a real-time event log
+4. **Reports** - Use `export-analytics` for periodic CSV/JSON exports

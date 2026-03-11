@@ -1,0 +1,70 @@
+---
+title: API Reference
+description: Complete endpoint documentation for the Valyu Publisher Analytics API.
+---
+
+## Base URL
+
+```
+https://api.publisher.valyu.ai/v1
+```
+
+## Authentication
+
+All endpoints require a `vypub_` API key in the `x-api-key` header:
+
+```bash
+-H "x-api-key: vypub_your_key_here"
+```
+
+Your organization is automatically identified from the key. See [Authentication](/authentication) for details.
+
+## Endpoints
+
+<CardGroup cols={2}>
+  <Card title="Seller Usage" icon="chart-bar" href="/api-reference/endpoint/seller-usage">
+    Time series usage data with source breakdown. Supports hourly, daily, weekly, and monthly granularity.
+  </Card>
+  <Card title="Seller Earnings" icon="money-bill-trend-up" href="/api-reference/endpoint/seller-earnings">
+    Earnings comparison between current and previous period. Powers dashboard KPI cards.
+  </Card>
+  <Card title="Latest Usage" icon="clock-rotate-left" href="/api-reference/endpoint/latest-usage">
+    Recent retrieval events with document metadata, source info, and earnings per transaction.
+  </Card>
+  <Card title="Export Analytics" icon="file-export" href="/api-reference/endpoint/export-analytics">
+    Bulk export as CSV or JSON. Summary or detailed mode with DOIs. Max 366 days per request.
+  </Card>
+</CardGroup>
+
+## OpenAPI Specification
+
+The full API is described by an [OpenAPI 3.1 specification](/api-reference/openapi.yaml). Import it into Postman, Insomnia, or any OpenAPI-compatible tool.
+
+## Common patterns
+
+### All endpoints use POST
+
+Even read-only queries use `POST` with a JSON body. This allows complex filter parameters without URL encoding issues.
+
+### Errors
+
+All error responses follow the same format:
+
+```json
+{
+  "error": "Description of what went wrong"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Success |
+| `400` | Invalid request parameters |
+| `401` | Missing or invalid API key |
+| `500` | Server error |
+
+### Rate limits
+
+The API Gateway enforces a global throttle:
+- **Sustained rate**: 50 requests/second
+- **Burst**: 100 requests

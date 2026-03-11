@@ -1,0 +1,71 @@
+---
+title: Seller Earnings
+api: POST /analytics/seller-earnings
+description: Get earnings with period-over-period comparison for dashboard KPI cards.
+---
+
+<ParamField body="timePeriod" type="string" required>
+  Comparison period. One of:
+  - `d` - Today vs yesterday
+  - `w` - Last 7 days vs previous 7 days
+  - `m` - Last 30 days vs previous 30 days
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-earnings \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: vypub_your_key_here" \
+  -d '{"timePeriod": "w"}'
+```
+
+```python Python
+response = requests.post(
+    "https://api.publisher.valyu.ai/v1/analytics/seller-earnings",
+    headers={"x-api-key": "vypub_your_key_here", "Content-Type": "application/json"},
+    json={"timePeriod": "w"},
+)
+data = response.json()
+print(f"${data['current_earnings']:.2f} ({data['percentage_change']:+.1f}%)")
+```
+
+```javascript JavaScript
+const response = await fetch("https://api.publisher.valyu.ai/v1/analytics/seller-earnings", {
+  method: "POST",
+  headers: { "x-api-key": "vypub_your_key_here", "Content-Type": "application/json" },
+  body: JSON.stringify({ timePeriod: "w" }),
+});
+const data = await response.json();
+console.log(`$${data.current_earnings.toFixed(2)} (${data.percentage_change > 0 ? "+" : ""}${data.percentage_change.toFixed(1)}%)`);
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "current_earnings": 12.4523,
+  "previous_earnings": 9.8712,
+  "percentage_change": 26.14
+}
+```
+
+```json 400
+{
+  "error": "Invalid time_period: must be 'd', 'w', or 'm'"
+}
+```
+
+```json 401
+{
+  "error": "Unauthorized"
+}
+```
+</ResponseExample>
+
+## Response fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `current_earnings` | number | Total earnings in USD for the current period |
+| `previous_earnings` | number | Total earnings in USD for the previous period |
+| `percentage_change` | number | Percentage change from previous to current (positive = growth) |

@@ -1,0 +1,97 @@
+---
+title: Usage Analytics
+description: Track how your content is being consumed across the Valyu network.
+---
+
+The usage analytics endpoint returns time series data showing how your content is being retrieved by AI agents. Each data point is broken down by source, making it easy to understand which parts of your catalog drive the most activity.
+
+## Basic usage
+
+Get daily usage for the last 7 days:
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-usage \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $VALYU_PUB_KEY" \
+  -d '{"timeScale": "d", "period": 7}'
+```
+
+```python Python
+response = requests.post(
+    f"{BASE_URL}/analytics/seller-usage",
+    headers={"x-api-key": API_KEY, "Content-Type": "application/json"},
+    json={"timeScale": "d", "period": 7},
+)
+
+for bucket in response.json():
+    print(f"{bucket['day']}: ${bucket['All']:.4f}")
+```
+
+```javascript JavaScript
+const response = await fetch(`${BASE_URL}/analytics/seller-usage`, {
+  method: "POST",
+  headers: { "x-api-key": API_KEY, "Content-Type": "application/json" },
+  body: JSON.stringify({ timeScale: "d", period: 7 }),
+});
+
+const data = await response.json();
+data.forEach((b) => console.log(`${b.day}: $${b.All?.toFixed(4)}`));
+```
+</CodeGroup>
+
+## Time scales
+
+Control the granularity of your data with the `timeScale` parameter:
+
+| Value | Granularity | Example use case |
+|-------|-------------|------------------|
+| `h` | Hourly | Real-time monitoring, last 24-48 hours |
+| `d` | Daily | Weekly trends, dashboard charts |
+| `w` | Weekly | Monthly reports |
+| `m` | Monthly | Quarterly/annual reviews |
+
+The `period` parameter sets how many buckets to return. For example, `timeScale: "d"` with `period: 30` returns the last 30 days.
+
+## Include retrieval counts
+
+Add `includeCount: true` to get retrieval counts alongside earnings:
+
+```json
+{
+  "timeScale": "d",
+  "period": 7,
+  "includeCount": true
+}
+```
+
+This adds `_count` suffix fields to the response:
+
+```json
+{
+  "day": "2026-03-05T00:00:00",
+  "All": 0.0523,
+  "All_count": 47,
+  "source/academic": 0.0312,
+  "source/academic_count": 28,
+  "source/web": 0.0211,
+  "source/web_count": 19
+}
+```
+
+## Recent events
+
+To see individual retrieval events instead of aggregated time series, use the [latest usage endpoint](/api-reference/endpoint/latest-usage):
+
+```bash
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/latest-usage \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $VALYU_PUB_KEY" \
+  -d '{"n": 20}'
+```
+
+Each event includes:
+- Timestamp and earnings amount
+- Which Valyu product triggered it (search, answer, contents, deepresearch)
+- Document metadata (titles, URLs, IDs)
+- Source breakdown

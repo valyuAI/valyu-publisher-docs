@@ -1,0 +1,539 @@
+openapi: 3.1.0
+info:
+  title: Valyu Publisher Analytics API
+  version: 1.0.0
+  description: |
+    Analytics API for Valyu publishers. Provides access to usage metrics, earnings data,
+    recent activity logs, and data export functionality.
+
+    ## Authentication
+
+    All endpoints require a `vypub_` API key passed via the `x-api-key` header.
+    The API key is validated by a Lambda authorizer which maps the key to your organization.
+    You do not need to pass an `orgId` - it is derived automatically from your API key.
+
+    ## Quick Start
+
+    ```bash
+    # Set your API key
+    export VALYU_PUB_KEY="vypub_..."
+
+    # Get usage data for the last 7 days
+    curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-usage \
+      -H "Content-Type: application/json" \
+      -H "x-api-key: $VALYU_PUB_KEY" \
+      -d '{"timeScale": "d", "period": 7}'
+
+    # Get earnings comparison
+    curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-earnings \
+      -H "Content-Type: application/json" \
+      -H "x-api-key: $VALYU_PUB_KEY" \
+      -d '{"timePeriod": "w"}'
+    ```
+
+    ## Importing into Postman
+
+    1. Open Postman and click **Import** (top-left)
+    2. Select this file (`openapi.yaml`) or paste its contents
+    3. Postman will create a collection with all endpoints pre-configured
+    4. Set the `x-api-key` header in the collection's Authorization tab:
+       - Type: **API Key**
+       - Key: `x-api-key`
+       - Value: your `vypub_...` key
+       - Add to: **Header**
+    5. Update the base URL variable `{{baseUrl}}` to your API Gateway URL
+
+    ## Importing into Insomnia
+
+    1. Go to **Application > Preferences > Data > Import Data**
+    2. Select this file
+    3. Set the `x-api-key` environment variable to your `vypub_...` key
+
+  contact:
+    name: Valyu
+    email: contact@valyu.ai
+    url: https://valyu.ai
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://api.publisher.valyu.ai/v1
+    description: Valyu Publisher Analytics API
+
+security:
+  - publisherApiKey: []
+
+paths:
+  /analytics/seller-usage:
+    post:
+      operationId: getSellerUsage
+      summary: Get usage analytics time series
+      description: |
+        Returns aggregated usage data as a time series, broken down by data source.
+        Each entry contains earnings and optional retrieval counts per source for
+        each time bucket in the requested range.
+      tags:
+        - Usage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SellerUsageRequest'
+            examples:
+              daily7:
+                summary: Last 7 days, daily
+                value:
+                  timeScale: d
+                  period: 7
+              hourly24:
+                summary: Last 24 hours, hourly
+                value:
+                  timeScale: h
+                  period: 24
+              monthly12WithCounts:
+                summary: Last 12 months with retrieval counts
+                value:
+                  timeScale: m
+                  period: 12
+                  includeCount: true
+      responses:
+        '200':
+          description: Time series usage data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UsageTimeBucket'
+              example:
+                - day: "2026-03-01T00:00:00"
+                  All: 0.0523
+                  "source/academic": 0.0312
+                  "source/web": 0.0211
+                - day: "2026-03-02T00:00:00"
+                  All: 0.0891
+                  "source/academic": 0.0654
+                  "source/web": 0.0237
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /analytics/seller-earnings:
+    post:
+      operationId: getSellerEarnings
+      summary: Get earnings with period comparison
+      description: |
+        Returns total earnings for the current period and the previous period of
+        the same length, plus the percentage change between them.
+        Useful for dashboard KPI cards showing earnings trends.
+      tags:
+        - Earnings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SellerEarningsRequest'
+            examples:
+              daily:
+                summary: Today vs yesterday
+                value:
+                  timePeriod: d
+              weekly:
+                summary: This week vs last week
+                value:
+                  timePeriod: w
+              monthly:
+                summary: This month vs last month
+                value:
+                  timePeriod: m
+      responses:
+        '200':
+          description: Earnings comparison data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EarningsResponse'
+              example:
+                current_earnings: 12.4523
+                previous_earnings: 9.8712
+                percentage_change: 26.14
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /analytics/latest-usage:
+    post:
+      operationId: getLatestUsage
+      summary: Get recent usage events
+      description: |
+        Returns the N most recent retrieval events for your organization, including
+        document metadata, earnings per transaction, source breakdown, and product type.
+        Results are sorted by timestamp descending (newest first).
+      tags:
+        - Usage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LatestUsageRequest'
+            examples:
+              default:
+                summary: Last 10 events (default)
+                value: {}
+              last50:
+                summary: Last 50 events
+                value:
+                  n: 50
+      responses:
+        '200':
+          description: Recent usage events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UsageEntry'
+              example:
+                - timeStamp: "2026-03-08T14:23:01.123456Z"
+                  amount: 0.0042
+                  number_of_sources: 2
+                  response_time: 0.0
+                  api_key_prefix: "vy-abc1"
+                  sources: "source/academic,source/web"
+                  documents:
+                    - title: "Advances in Neural Architecture Search"
+                      url: "https://example.com/paper.pdf"
+                      id: "doc123"
+                      category: "academic"
+                  product: "search"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /analytics/export-analytics:
+    post:
+      operationId: exportAnalytics
+      summary: Export analytics data as CSV or JSON
+      description: |
+        Exports analytics data for a date range in CSV or JSON format.
+        Two modes available:
+        - **Summary mode** (default): Daily aggregated metrics per source
+        - **Detailed mode**: Individual retrieval log entries with document DOIs
+
+        The response includes a `Content-Disposition` header with a suggested filename.
+        Maximum date range is 366 days.
+      tags:
+        - Export
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportRequest'
+            examples:
+              csvSummary:
+                summary: CSV summary for March 2026
+                value:
+                  startDate: "2026-03-01"
+                  endDate: "2026-03-31"
+                  format: csv
+              jsonDetailed:
+                summary: Detailed JSON logs for a week
+                value:
+                  startDate: "2026-03-01"
+                  endDate: "2026-03-07"
+                  format: json
+                  detailed: true
+      responses:
+        '200':
+          description: Exported analytics data
+          content:
+            text/csv:
+              schema:
+                type: string
+              example: |
+                Date,Source,Earnings,Retrievals
+                2026-03-01,source/academic,0.0312,15
+                2026-03-01,source/web,0.0211,23
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/DailyMetric'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/DetailedLogEntry'
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              example: 'attachment; filename="valyu-analytics-2026-03-01-to-2026-03-31.csv"'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    publisherApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: |
+        Publisher API key starting with `vypub_`. Obtain from the API Keys page
+        in your publisher dashboard, or auto-provisioned on organization creation.
+
+  schemas:
+    SellerUsageRequest:
+      type: object
+      required:
+        - timeScale
+        - period
+      properties:
+        timeScale:
+          type: string
+          enum: [h, d, w, m]
+          description: |
+            Time bucket granularity:
+            - `h` - Hourly
+            - `d` - Daily
+            - `w` - Weekly
+            - `m` - Monthly
+          example: d
+        period:
+          type: integer
+          minimum: 1
+          maximum: 365
+          description: Number of time buckets to return (e.g., 7 for last 7 days)
+          example: 7
+        includeCount:
+          type: boolean
+          default: false
+          description: Include retrieval counts per source (adds `{source}_count` and `All_count` fields)
+
+    SellerEarningsRequest:
+      type: object
+      required:
+        - timePeriod
+      properties:
+        timePeriod:
+          type: string
+          enum: [d, w, m]
+          description: |
+            Comparison period:
+            - `d` - Today vs yesterday
+            - `w` - Last 7 days vs previous 7 days
+            - `m` - Last 30 days vs previous 30 days
+          example: w
+
+    LatestUsageRequest:
+      type: object
+      properties:
+        n:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+          description: Number of recent events to return
+          example: 10
+
+    ExportRequest:
+      type: object
+      required:
+        - startDate
+        - endDate
+      properties:
+        startDate:
+          type: string
+          format: date
+          description: Start date (YYYY-MM-DD)
+          example: "2026-03-01"
+        endDate:
+          type: string
+          format: date
+          description: End date (YYYY-MM-DD). Max 366 days from startDate.
+          example: "2026-03-31"
+        format:
+          type: string
+          enum: [csv, json]
+          default: csv
+          description: Output format
+        detailed:
+          type: boolean
+          default: false
+          description: |
+            When `true`, returns individual retrieval log entries with DOIs.
+            When `false` (default), returns daily aggregated metrics per source.
+
+    EarningsResponse:
+      type: object
+      properties:
+        current_earnings:
+          type: number
+          format: double
+          description: Total earnings in the current period (USD)
+        previous_earnings:
+          type: number
+          format: double
+          description: Total earnings in the previous period (USD)
+        percentage_change:
+          type: number
+          format: double
+          description: Percentage change from previous to current period
+
+    UsageTimeBucket:
+      type: object
+      description: |
+        A single time bucket in the usage time series. Contains a timestamp field
+        (keyed by the period type) and earnings values per source. The `All` field
+        is the sum across all sources.
+      properties:
+        hour:
+          type: string
+          description: Timestamp (present when timeScale is `h`)
+        day:
+          type: string
+          description: Timestamp (present when timeScale is `d`)
+        week:
+          type: string
+          description: Timestamp (present when timeScale is `w`)
+        month:
+          type: string
+          description: Timestamp (present when timeScale is `m`)
+        All:
+          type: number
+          format: double
+          description: Total earnings across all sources for this bucket
+        All_count:
+          type: number
+          description: Total retrieval count across all sources (only when `includeCount` is true)
+      additionalProperties:
+        type: number
+        description: |
+          Dynamic keys for each data source (e.g., `source/academic`, `source/web`).
+          When `includeCount` is true, count keys are also present (e.g., `source/academic_count`).
+
+    UsageEntry:
+      type: object
+      properties:
+        timeStamp:
+          type: string
+          format: date-time
+          description: When the retrieval occurred
+        amount:
+          type: number
+          format: double
+          description: Earnings from this retrieval (USD)
+        number_of_sources:
+          type: integer
+          description: Number of data sources involved
+        response_time:
+          type: number
+          format: double
+          description: Response time in seconds
+        api_key_prefix:
+          type: string
+          description: Prefix of the API key used by the buyer
+        sources:
+          type: string
+          description: Comma-separated list of source IDs
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentMetadata'
+        product:
+          type: string
+          enum: [search, answer, contents, deepresearch]
+          description: Which Valyu product triggered the retrieval
+
+    DocumentMetadata:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Document title
+        url:
+          type: string
+          description: Document URL
+        id:
+          type: string
+          description: Document identifier
+        category:
+          type: string
+          description: Document category
+
+    DailyMetric:
+      type: object
+      description: Aggregated daily metric for export
+      properties:
+        date:
+          type: string
+          format: date
+          description: Date (YYYY-MM-DD)
+        source:
+          type: string
+          description: Data source identifier
+        earnings:
+          type: number
+          format: double
+          description: Earnings for this source on this date (USD)
+        retrievals:
+          type: integer
+          description: Number of retrievals
+
+    DetailedLogEntry:
+      type: object
+      description: Individual retrieval log entry for detailed export
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: When the retrieval occurred
+        transaction_id:
+          type: string
+          description: Unique transaction identifier
+        source:
+          type: string
+          description: Data source identifier
+        earnings:
+          type: number
+          format: double
+          description: Earnings from this retrieval (USD)
+        document_count:
+          type: integer
+          description: Number of documents retrieved
+        dois:
+          type: array
+          items:
+            type: string
+          description: DOIs of retrieved documents
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "Invalid time_period: must be 'd', 'w', or 'm'"
+    Unauthorized:
+      description: Missing or invalid API key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "Unauthorized"
