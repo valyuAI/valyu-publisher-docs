@@ -21,7 +21,7 @@ description: Get your first Publisher Analytics API call working in under a minu
     ```bash cURL
     export VALYU_PUB_KEY="vypub_your_key_here"
 
-    curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-usage \
+    curl -X POST https://api.publisher.valyu.ai/v1/analytics/usage \
       -H "Content-Type: application/json" \
       -H "x-api-key: $VALYU_PUB_KEY" \
       -d '{"timeScale": "d", "period": 7}'
@@ -34,7 +34,7 @@ description: Get your first Publisher Analytics API call working in under a minu
     BASE_URL = "https://api.publisher.valyu.ai/v1"
 
     response = requests.post(
-        f"{BASE_URL}/analytics/seller-usage",
+        f"{BASE_URL}/analytics/usage",
         headers={
             "Content-Type": "application/json",
             "x-api-key": API_KEY,
@@ -51,7 +51,7 @@ description: Get your first Publisher Analytics API call working in under a minu
     const API_KEY = "vypub_your_key_here";
     const BASE_URL = "https://api.publisher.valyu.ai/v1";
 
-    const response = await fetch(`${BASE_URL}/analytics/seller-usage`, {
+    const response = await fetch(`${BASE_URL}/analytics/usage`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

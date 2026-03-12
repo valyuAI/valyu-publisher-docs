@@ -1,6 +1,6 @@
 ---
-title: Latest Usage
-api: POST /analytics/latest-usage
+title: Activity
+api: POST /analytics/activity
 description: Get the most recent retrieval events with document metadata and earnings.
 ---
 
@@ -10,7 +10,7 @@ description: Get the most recent retrieval events with document metadata and ear
 
 <RequestExample>
 ```bash cURL
-curl -X POST https://api.publisher.valyu.ai/v1/analytics/latest-usage \
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/activity \
   -H "Content-Type: application/json" \
   -H "x-api-key: vypub_your_key_here" \
   -d '{"n": 20}'
@@ -18,7 +18,7 @@ curl -X POST https://api.publisher.valyu.ai/v1/analytics/latest-usage \
 
 ```python Python
 response = requests.post(
-    "https://api.publisher.valyu.ai/v1/analytics/latest-usage",
+    "https://api.publisher.valyu.ai/v1/analytics/activity",
     headers={"x-api-key": "vypub_your_key_here", "Content-Type": "application/json"},
     json={"n": 20},
 )
@@ -27,7 +27,7 @@ for event in response.json():
 ```
 
 ```javascript JavaScript
-const response = await fetch("https://api.publisher.valyu.ai/v1/analytics/latest-usage", {
+const response = await fetch("https://api.publisher.valyu.ai/v1/analytics/activity", {
   method: "POST",
   headers: { "x-api-key": "vypub_your_key_here", "Content-Type": "application/json" },
   body: JSON.stringify({ n: 20 }),

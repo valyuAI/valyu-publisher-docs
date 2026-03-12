@@ -1,6 +1,6 @@
 ---
-title: Seller Usage
-api: POST /analytics/seller-usage
+title: Usage
+api: POST /analytics/usage
 description: Get aggregated usage data as a time series, broken down by data source.
 ---
 
@@ -22,7 +22,7 @@ description: Get aggregated usage data as a time series, broken down by data sou
 
 <RequestExample>
 ```bash cURL
-curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-usage \
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/usage \
   -H "Content-Type: application/json" \
   -H "x-api-key: vypub_your_key_here" \
   -d '{"timeScale": "d", "period": 7}'
@@ -30,7 +30,7 @@ curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-usage \
 
 ```python Python
 response = requests.post(
-    "https://api.publisher.valyu.ai/v1/analytics/seller-usage",
+    "https://api.publisher.valyu.ai/v1/analytics/usage",
     headers={"x-api-key": "vypub_your_key_here", "Content-Type": "application/json"},
     json={"timeScale": "d", "period": 7},
 )
@@ -38,7 +38,7 @@ print(response.json())
 ```
 
 ```javascript JavaScript
-const response = await fetch("https://api.publisher.valyu.ai/v1/analytics/seller-usage", {
+const response = await fetch("https://api.publisher.valyu.ai/v1/analytics/usage", {
   method: "POST",
   headers: { "x-api-key": "vypub_your_key_here", "Content-Type": "application/json" },
   body: JSON.stringify({ timeScale: "d", period: 7 }),

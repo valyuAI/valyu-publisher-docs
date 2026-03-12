@@ -8,7 +8,7 @@ description: How API key authentication works for the Publisher Analytics API.
 All Publisher Analytics API endpoints require authentication via a `vypub_` API key passed in the `x-api-key` header.
 
 ```bash
-curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-usage \
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/usage \
   -H "x-api-key: vypub_your_key_here" \
   -H "Content-Type: application/json" \
   -d '{"timeScale": "d", "period": 7}'

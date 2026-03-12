@@ -1,6 +1,6 @@
 ---
-title: Export Analytics
-api: POST /analytics/export-analytics
+title: Export
+api: POST /analytics/export
 description: Export analytics data as CSV or JSON for a date range. Summary or detailed mode.
 ---
 
@@ -22,7 +22,7 @@ description: Export analytics data as CSV or JSON for a date range. Summary or d
 
 <RequestExample>
 ```bash cURL (CSV summary)
-curl -X POST https://api.publisher.valyu.ai/v1/analytics/export-analytics \
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/export \
   -H "Content-Type: application/json" \
   -H "x-api-key: vypub_your_key_here" \
   -d '{
@@ -33,7 +33,7 @@ curl -X POST https://api.publisher.valyu.ai/v1/analytics/export-analytics \
 ```
 
 ```bash cURL (JSON detailed)
-curl -X POST https://api.publisher.valyu.ai/v1/analytics/export-analytics \
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/export \
   -H "Content-Type: application/json" \
   -H "x-api-key: vypub_your_key_here" \
   -d '{
@@ -46,7 +46,7 @@ curl -X POST https://api.publisher.valyu.ai/v1/analytics/export-analytics \
 
 ```python Python
 response = requests.post(
-    "https://api.publisher.valyu.ai/v1/analytics/export-analytics",
+    "https://api.publisher.valyu.ai/v1/analytics/export",
     headers={"x-api-key": "vypub_your_key_here", "Content-Type": "application/json"},
     json={
         "startDate": "2026-03-01",
@@ -60,7 +60,7 @@ with open("analytics.csv", "w") as f:
 ```
 
 ```javascript JavaScript
-const response = await fetch("https://api.publisher.valyu.ai/v1/analytics/export-analytics", {
+const response = await fetch("https://api.publisher.valyu.ai/v1/analytics/export", {
   method: "POST",
   headers: { "x-api-key": "vypub_your_key_here", "Content-Type": "application/json" },
   body: JSON.stringify({

@@ -19,13 +19,13 @@ info:
     export VALYU_PUB_KEY="vypub_..."
 
     # Get usage data for the last 7 days
-    curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-usage \
+    curl -X POST https://api.publisher.valyu.ai/v1/analytics/usage \
       -H "Content-Type: application/json" \
       -H "x-api-key: $VALYU_PUB_KEY" \
       -d '{"timeScale": "d", "period": 7}'
 
     # Get earnings comparison
-    curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-earnings \
+    curl -X POST https://api.publisher.valyu.ai/v1/analytics/earnings \
       -H "Content-Type: application/json" \
       -H "x-api-key: $VALYU_PUB_KEY" \
       -d '{"timePeriod": "w"}'
@@ -64,9 +64,9 @@ security:
   - publisherApiKey: []
 
 paths:
-  /analytics/seller-usage:
+  /analytics/usage:
     post:
-      operationId: getSellerUsage
+      operationId: getUsage
       summary: Get usage analytics time series
       description: |
         Returns aggregated usage data as a time series, broken down by data source.
@@ -79,7 +79,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SellerUsageRequest'
+              $ref: '#/components/schemas/UsageRequest'
             examples:
               daily7:
                 summary: Last 7 days, daily
@@ -120,9 +120,9 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
-  /analytics/seller-earnings:
+  /analytics/earnings:
     post:
-      operationId: getSellerEarnings
+      operationId: getEarnings
       summary: Get earnings with period comparison
       description: |
         Returns total earnings for the current period and the previous period of
@@ -135,7 +135,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SellerEarningsRequest'
+              $ref: '#/components/schemas/EarningsRequest'
             examples:
               daily:
                 summary: Today vs yesterday
@@ -165,9 +165,9 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
-  /analytics/latest-usage:
+  /analytics/activity:
     post:
-      operationId: getLatestUsage
+      operationId: getActivity
       summary: Get recent usage events
       description: |
         Returns the N most recent retrieval events for your organization, including
@@ -214,7 +214,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
-  /analytics/export-analytics:
+  /analytics/export:
     post:
       operationId: exportAnalytics
       summary: Export analytics data as CSV or JSON
@@ -289,7 +289,7 @@ components:
         in your publisher dashboard, or auto-provisioned on organization creation.
 
   schemas:
-    SellerUsageRequest:
+    UsageRequest:
       type: object
       required:
         - timeScale
@@ -316,7 +316,7 @@ components:
           default: false
           description: Include retrieval counts per source (adds `{source}_count` and `All_count` fields)
 
-    SellerEarningsRequest:
+    EarningsRequest:
       type: object
       required:
         - timePeriod

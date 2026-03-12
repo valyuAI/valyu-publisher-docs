@@ -11,7 +11,7 @@ Compare this week's earnings to last week:
 
 <CodeGroup>
 ```bash cURL
-curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-earnings \
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/earnings \
   -H "Content-Type: application/json" \
   -H "x-api-key: $VALYU_PUB_KEY" \
   -d '{"timePeriod": "w"}'
@@ -19,7 +19,7 @@ curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-earnings \
 
 ```python Python
 response = requests.post(
-    f"{BASE_URL}/analytics/seller-earnings",
+    f"{BASE_URL}/analytics/earnings",
     headers={"x-api-key": API_KEY, "Content-Type": "application/json"},
     json={"timePeriod": "w"},
 )
@@ -31,7 +31,7 @@ print(f"Change:   {data['percentage_change']:+.1f}%")
 ```
 
 ```javascript JavaScript
-const response = await fetch(`${BASE_URL}/analytics/seller-earnings`, {
+const response = await fetch(`${BASE_URL}/analytics/earnings`, {
   method: "POST",
   headers: { "x-api-key": API_KEY, "Content-Type": "application/json" },
   body: JSON.stringify({ timePeriod: "w" }),
@@ -70,7 +70,7 @@ console.log(`Change:   ${data.percentage_change > 0 ? "+" : ""}${data.percentage
 
 Combine the earnings endpoint with the [usage endpoint](/guides/usage-analytics) to build complete analytics dashboards:
 
-1. **KPI cards** - Use `seller-earnings` with different `timePeriod` values for daily/weekly/monthly snapshots
-2. **Charts** - Use `seller-usage` with `timeScale: "d"` for line charts
-3. **Activity feed** - Use `latest-usage` for a real-time event log
-4. **Reports** - Use `export-analytics` for periodic CSV/JSON exports
+1. **KPI cards** - Use `earnings` with different `timePeriod` values for daily/weekly/monthly snapshots
+2. **Charts** - Use `usage` with `timeScale: "d"` for line charts
+3. **Activity feed** - Use `activity` for a real-time event log
+4. **Reports** - Use `export` for periodic CSV/JSON exports

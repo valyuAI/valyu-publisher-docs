@@ -66,10 +66,10 @@
           {
             "group": "Endpoints",
             "pages": [
-              "api-reference/endpoint/seller-usage",
-              "api-reference/endpoint/seller-earnings",
-              "api-reference/endpoint/latest-usage",
-              "api-reference/endpoint/export-analytics"
+              "api-reference/endpoint/usage",
+              "api-reference/endpoint/earnings",
+              "api-reference/endpoint/activity",
+              "api-reference/endpoint/export"
             ]
           }
         ]

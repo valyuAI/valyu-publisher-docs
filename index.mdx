@@ -46,15 +46,15 @@ Publisher Analytics API <-- You are here
 
 | Endpoint | Description |
 |----------|-------------|
-| [`POST /analytics/seller-usage`](/api-reference/endpoint/seller-usage) | Time series usage data by source |
-| [`POST /analytics/seller-earnings`](/api-reference/endpoint/seller-earnings) | Earnings with period-over-period comparison |
-| [`POST /analytics/latest-usage`](/api-reference/endpoint/latest-usage) | Recent retrieval events with document metadata |
-| [`POST /analytics/export-analytics`](/api-reference/endpoint/export-analytics) | Bulk export as CSV or JSON |
+| [`POST /analytics/usage`](/api-reference/endpoint/usage) | Time series usage data by source |
+| [`POST /analytics/earnings`](/api-reference/endpoint/earnings) | Earnings with period-over-period comparison |
+| [`POST /analytics/activity`](/api-reference/endpoint/activity) | Recent retrieval events with document metadata |
+| [`POST /analytics/export`](/api-reference/endpoint/export) | Bulk export as CSV or JSON |
 
 ## Quick example
 
 ```bash
-curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-usage \
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/usage \
   -H "Content-Type: application/json" \
   -H "x-api-key: vypub_your_key_here" \
   -d '{"timeScale": "d", "period": 7}'

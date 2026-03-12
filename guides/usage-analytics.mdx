@@ -11,7 +11,7 @@ Get daily usage for the last 7 days:
 
 <CodeGroup>
 ```bash cURL
-curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-usage \
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/usage \
   -H "Content-Type: application/json" \
   -H "x-api-key: $VALYU_PUB_KEY" \
   -d '{"timeScale": "d", "period": 7}'
@@ -19,7 +19,7 @@ curl -X POST https://api.publisher.valyu.ai/v1/analytics/seller-usage \
 
 ```python Python
 response = requests.post(
-    f"{BASE_URL}/analytics/seller-usage",
+    f"{BASE_URL}/analytics/usage",
     headers={"x-api-key": API_KEY, "Content-Type": "application/json"},
     json={"timeScale": "d", "period": 7},
 )
@@ -29,7 +29,7 @@ for bucket in response.json():
 ```
 
 ```javascript JavaScript
-const response = await fetch(`${BASE_URL}/analytics/seller-usage`, {
+const response = await fetch(`${BASE_URL}/analytics/usage`, {
   method: "POST",
   headers: { "x-api-key": API_KEY, "Content-Type": "application/json" },
   body: JSON.stringify({ timeScale: "d", period: 7 }),
@@ -81,10 +81,10 @@ This adds `_count` suffix fields to the response:
 
 ## Recent events
 
-To see individual retrieval events instead of aggregated time series, use the [latest usage endpoint](/api-reference/endpoint/latest-usage):
+To see individual retrieval events instead of aggregated time series, use the [activity endpoint](/api-reference/endpoint/activity):
 
 ```bash
-curl -X POST https://api.publisher.valyu.ai/v1/analytics/latest-usage \
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/activity \
   -H "Content-Type: application/json" \
   -H "x-api-key: $VALYU_PUB_KEY" \
   -d '{"n": 20}'

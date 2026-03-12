@@ -11,7 +11,7 @@ Export daily aggregated metrics per source:
 
 <CodeGroup>
 ```bash cURL
-curl -X POST https://api.publisher.valyu.ai/v1/analytics/export-analytics \
+curl -X POST https://api.publisher.valyu.ai/v1/analytics/export \
   -H "Content-Type: application/json" \
   -H "x-api-key: $VALYU_PUB_KEY" \
   -d '{
@@ -23,7 +23,7 @@ curl -X POST https://api.publisher.valyu.ai/v1/analytics/export-analytics \
 
 ```python Python
 response = requests.post(
-    f"{BASE_URL}/analytics/export-analytics",
+    f"{BASE_URL}/analytics/export",
     headers={"x-api-key": API_KEY, "Content-Type": "application/json"},
     json={
         "startDate": "2026-03-01",
@@ -37,7 +37,7 @@ with open("analytics-march.csv", "w") as f:
 ```
 
 ```javascript JavaScript
-const response = await fetch(`${BASE_URL}/analytics/export-analytics`, {
+const response = await fetch(`${BASE_URL}/analytics/export`, {
   method: "POST",
   headers: { "x-api-key": API_KEY, "Content-Type": "application/json" },
   body: JSON.stringify({
